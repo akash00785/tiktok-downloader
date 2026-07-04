@@ -3,132 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tik2BD - TikTok Video Downloader No Watermark</title>
+    <title>Tik2BD - TikTok Downloader</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Font: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { 
-            background: radial-gradient(circle at 50% -20%, #1e1b4b, #030712);
-            background-attachment: fixed;
-            font-family: 'Inter', sans-serif;
-        }
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        body { background: #0f172a; font-family: 'Inter', sans-serif; }
+        .glass-input { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="text-white antialiased">
+<body class="text-white antialiased min-h-screen flex flex-col items-center p-4">
 
-    <!-- Header Section -->
-    <header class="min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
-        <h1 class="text-5xl font-extrabold mb-4 drop-shadow-lg">Tik2BD Downloader</h1>
-        <p class="text-lg mb-8 opacity-80">Download TikTok videos without watermark in HD quality</p>
-
-        <!-- Glassmorphism Input Card -->
-        <div class="max-w-2xl w-full glass-card p-2 rounded-2xl shadow-2xl flex items-center">
-            <input type="text" id="urlInput" placeholder="Paste your TikTok link here..." 
-                   class="w-full bg-transparent p-4 text-white placeholder-white/50 outline-none rounded-l-xl">
-            <button onclick="pasteLink()" class="p-4 text-white/70 hover:text-white transition font-semibold">Paste</button>
-            <button onclick="clearInput()" class="p-4 text-white/70 hover:text-red-400 transition font-semibold border-l border-white/10">Clear</button>
-            <button onclick="downloadVideo()" id="downloadBtn"
-                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-xl transition-all hover:scale-105 shadow-lg">
-                Download
-            </button>
-        </div>
-        <div id="result" class="mt-6 text-lg font-bold min-h-[50px]"></div>
+    <header class="w-full max-w-2xl mt-10 text-center mb-10">
+        <h1 class="text-4xl font-extrabold mb-2">Tik2BD Downloader</h1>
+        <p class="text-slate-400">Download without watermark in HD</p>
     </header>
 
-    <!-- How to Use Section -->
-    <section class="max-w-4xl mx-auto py-12 px-6">
-        <h2 class="text-3xl font-bold text-center mb-10">How to Use Tik2BD?</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
-                <h3 class="text-xl font-bold mb-2">1. Copy Link</h3>
-                <p class="text-slate-400">Copy the video link from TikTok app.</p>
-            </div>
-            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
-                <h3 class="text-xl font-bold mb-2">2. Paste URL</h3>
-                <p class="text-slate-400">Paste your link in the input box above.</p>
-            </div>
-            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
-                <h3 class="text-xl font-bold mb-2">3. Download HD</h3>
-                <p class="text-slate-400">Click download and save the HD file.</p>
-            </div>
-        </div>
-    </section>
+    <div class="w-full max-w-2xl glass-input p-2 rounded-xl flex items-center gap-2 shadow-lg">
+        <input type="text" id="urlInput" placeholder="Paste your TikTok link here..." 
+               class="w-full bg-transparent p-3 text-white outline-none placeholder-slate-500">
+        
+        <button id="pasteBtn" onclick="pasteLink()" class="px-4 py-2 bg-slate-700 rounded-lg hover:bg-slate-600 transition">Paste</button>
+        <button id="clearBtn" onclick="clearInput()" class="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hidden transition">Clear</button>
+        
+        <button onclick="downloadVideo()" id="downloadBtn" class="bg-blue-600 px-6 py-2 rounded-lg font-bold hover:bg-blue-500 transition">Download</button>
+    </div>
 
-    <!-- Features Section -->
-    <section class="max-w-4xl mx-auto pb-12 px-6">
-        <div class="grid md:grid-cols-3 gap-6 text-center">
-            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-2 text-blue-400">No Watermark</h3>
-                <p class="text-slate-400">Remove TT logo automatically.</p>
-            </div>
-            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-2 text-purple-400">HD Quality</h3>
-                <p class="text-slate-400">Highest resolution MP4 format.</p>
-            </div>
-            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
-                <h3 class="text-xl font-bold mb-2 text-green-400">Unlimited</h3>
-                <p class="text-slate-400">Download as much as you want.</p>
-            </div>
-        </div>
-    </section>
+    <div id="result" class="mt-6 w-full max-w-2xl text-center"></div>
 
-    <!-- Footer -->
-    <footer class="py-8 text-center border-t border-white/10 text-slate-500 text-sm">
-        <p>&copy; 2026 Tik2BD. All rights reserved.</p>
-        <div class="mt-2 space-x-4">
-            <a href="#" class="hover:text-white">Privacy Policy</a>
-            <a href="#" class="hover:text-white">Terms of Service</a>
-        </div>
-    </footer>
+    <section class="max-w-2xl w-full mt-10 grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-slate-800 p-4 rounded-xl text-center"><h3 class="text-blue-400 font-bold">No Watermark</h3></div>
+        <div class="bg-slate-800 p-4 rounded-xl text-center"><h3 class="text-purple-400 font-bold">HD Quality</h3></div>
+        <div class="bg-slate-800 p-4 rounded-xl text-center"><h3 class="text-green-400 font-bold">Fast</h3></div>
+    </section>
 
     <script>
         const input = document.getElementById('urlInput');
+        const pasteBtn = document.getElementById('pasteBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        // ইনপুট ট্র্যাক করার জন্য ফাংশন
+        input.addEventListener('input', () => {
+            if (input.value.length > 0) {
+                pasteBtn.classList.add('hidden');
+                clearBtn.classList.remove('hidden');
+            } else {
+                pasteBtn.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
+            }
+        });
 
         function pasteLink() {
-            navigator.clipboard.readText().then(text => { input.value = text; });
+            navigator.clipboard.readText().then(text => { 
+                input.value = text;
+                // পেস্ট করার পর বাটন আপডেট করতে ট্রিগার
+                input.dispatchEvent(new Event('input'));
+            });
         }
 
-        function clearInput() { input.value = ''; }
+        function clearInput() { 
+            input.value = ''; 
+            // ক্লিয়ার করার পর বাটন আপডেট করতে ট্রিগার
+            input.dispatchEvent(new Event('input'));
+        }
 
         async function downloadVideo() {
             const url = input.value.trim();
             const result = document.getElementById('result');
             const btn = document.getElementById('downloadBtn');
             
-            if(!url) { 
-                result.innerHTML = `<span class="text-yellow-400">⚠️ Please enter a valid link!</span>`;
-                return; 
-            }
+            if(!url) { alert("Please paste a link first!"); return; }
             
-            btn.disabled = true; 
-            btn.innerText = "Processing...";
-            result.innerHTML = "";
-
+            btn.disabled = true; btn.innerText = "Processing...";
             try {
-                const response = await fetch('/download', { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'}, 
-                    body: JSON.stringify({ url: url }) 
-                });
+                const response = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: url }) });
                 const data = await response.json();
-                
                 if (data.success) {
-                    result.innerHTML = `<a href="${data.url}" target="_blank" class="bg-green-600 hover:bg-green-500 px-8 py-3 rounded-full text-white font-bold transition shadow-lg animate-bounce">Download Video Now</a>`;
+                    result.innerHTML = `<a href="${data.url}" target="_blank" class="block w-full bg-green-600 p-4 rounded-lg font-bold">Download Video Now</a>`;
                 } else {
-                    result.innerHTML = `<span class="text-red-400">❌ Error: Video not found.</span>`;
+                    result.innerText = "Error: Video not found.";
                 }
-            } catch (err) { 
-                result.innerHTML = `<span class="text-red-400">⚠️ Server error, please try again!</span>`; 
-            } finally { 
-                btn.disabled = false; 
-                btn.innerText = "Download"; 
-            }
+            } catch (err) { result.innerText = "Server error!"; } finally { btn.disabled = false; btn.innerText = "Download"; }
         }
     </script>
 </body>
