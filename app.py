@@ -5,15 +5,11 @@ import random
 
 app = Flask(__name__, template_folder='templates')
 
-# এনভায়রনমেন্ট থেকে সব API Key লোড করা হচ্ছে
+# এনভায়রনমেন্ট থেকে কী গুলো লোড করা হচ্ছে
 api_keys_string = os.environ.get("API_KEYS")
 
-# যদি এনভায়রনমেন্ট ভেরিয়েবল পাওয়া যায় তবে লিস্টে রূপান্তর করা হচ্ছে, 
-# না পেলে পুরোনো কি-টি ডিফল্ট হিসেবে রাখা হচ্ছে
-if api_keys_string:
-    API_KEYS = api_keys_string.split(",")
-else:
-    API_KEYS = ["1767026ffamsh2e8f6444c4d41b2p1af27ejsn62de6dc97c5b"]
+# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে (নিরাপদ)
+API_KEYS = api_keys_string.split(",") if api_keys_string else []
 
 @app.route('/')
 def home():
@@ -21,6 +17,10 @@ def home():
 
 @app.route('/download', methods=['POST'])
 def download():
+    # যদি কোনো কী সেট করা না থাকে, তবে এরর দেখাবে
+    if not API_KEYS:
+        return jsonify({'success': False, 'error': 'API Key কনফিগার করা হয়নি'})
+
     data = request.json
     video_url = data.get('url')
     
@@ -29,7 +29,6 @@ def download():
 
     api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/" 
     
-    # প্রতিবার রিকোয়েস্টের সময় এখান থেকে একটি র‍্যান্ডম কি (Key) বেছে নেবে
     selected_key = random.choice(API_KEYS)
     
     headers = {
@@ -43,7 +42,6 @@ def download():
         response = requests.post(api_url, headers=headers, data=payload)
         result = response.json()
         
-        # 'code' চেক করছি
         if result.get('code') == 0:
             download_url = result.get('data', {}).get('play')
             return jsonify({'success': True, 'url': download_url})
