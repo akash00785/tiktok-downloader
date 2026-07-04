@@ -5,10 +5,8 @@ import random
 
 app = Flask(__name__, template_folder='templates')
 
-# এনভায়রনমেন্ট থেকে কী গুলো লোড করা হচ্ছে
+# API Key লোড করা
 api_keys_string = os.environ.get("API_KEYS")
-
-# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে (নিরাপদ)
 API_KEYS = api_keys_string.split(",") if api_keys_string else []
 
 @app.route('/')
@@ -17,7 +15,6 @@ def home():
 
 @app.route('/download', methods=['POST'])
 def download():
-    # যদি কোনো কী সেট করা না থাকে, তবে এরর দেখাবে
     if not API_KEYS:
         return jsonify({'success': False, 'error': 'API Key কনফিগার করা হয়নি'})
 
@@ -28,7 +25,6 @@ def download():
         return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
     api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/" 
-    
     selected_key = random.choice(API_KEYS)
     
     headers = {
@@ -43,10 +39,19 @@ def download():
         result = response.json()
         
         if result.get('code') == 0:
-            download_url = result.get('data', {}).get('play')
-            return jsonify({'success': True, 'url': download_url})
+            data = result.get('data', {})
+            author = data.get('author', {})
+            # এখানে আমরা সব তথ্য পাঠাচ্ছি
+            return jsonify({
+                'success': True,
+                'nickname': author.get('nickname', 'TikTok User'),
+                'avatar': author.get('avatar', ''),
+                'hd_url': data.get('hdplay'),
+                'sd_url': data.get('play'),
+                'mp3_url': data.get('music')
+            })
         else:
-            return jsonify({'success': False, 'error': 'API-তে ভিডিও পাওয়া যায়নি'})
+            return jsonify({'success': False, 'error': 'ভিডিওটি পাওয়া যায়নি।'})
             
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
