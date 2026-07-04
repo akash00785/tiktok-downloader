@@ -1,39 +1,79 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>SkyNet Digital AI Downloader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tik2BD - TikTok Video Downloader No Watermark</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); }
+    </style>
 </head>
-<body>
-    <h2>SkyNet Digital AI Downloader</h2>
-    <input type="text" id="urlInput" placeholder="TikTok URL এখানে দিন">
-    <button onclick="downloadVideo()">ডাউনলোড লিঙ্ক খুঁজুন</button>
-    <p id="result"></p>
+<body class="bg-slate-900 text-slate-200">
+
+    <nav class="p-6 flex justify-between items-center max-w-5xl mx-auto">
+        <div class="text-2xl font-bold text-white tracking-tighter">Tik<span class="text-blue-500">2BD</span></div>
+    </nav>
+
+    <section class="hero-bg py-16 px-4 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-4">TikTok Video Downloader</h1>
+        <p class="text-slate-400 mb-8">Download TikTok videos without watermark in HD quality, for free.</p>
+        
+        <div class="max-w-xl mx-auto bg-white p-2 rounded-2xl shadow-xl flex flex-col md:flex-row">
+            <input type="text" id="urlInput" placeholder="Paste your TikTok link here..." 
+                   class="w-full p-4 rounded-xl text-slate-900 outline-none">
+            <button onclick="downloadVideo()" id="downloadBtn"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition mt-2 md:mt-0">
+                Download
+            </button>
+        </div>
+        <div id="result" class="mt-6 font-semibold"></div>
+    </section>
+
+    <section class="max-w-5xl mx-auto py-16 px-6 grid md:grid-cols-3 gap-8">
+        <div class="p-6 bg-slate-800 rounded-2xl">
+            <h3 class="text-xl font-bold mb-2">No Watermark</h3>
+            <p class="text-slate-400">Download clean videos without the TikTok logo easily.</p>
+        </div>
+        <div class="p-6 bg-slate-800 rounded-2xl">
+            <h3 class="text-xl font-bold mb-2">HD Quality</h3>
+            <p class="text-slate-400">Save videos in original High Definition quality.</p>
+        </div>
+        <div class="p-6 bg-slate-800 rounded-2xl">
+            <h3 class="text-xl font-bold mb-2">Free & Unlimited</h3>
+            <p class="text-slate-400">No limits, no registration required. Totally free.</p>
+        </div>
+    </section>
+
+    <section class="max-w-3xl mx-auto py-10 px-6">
+        <h2 class="text-3xl font-bold mb-8 text-center">How to download TikTok videos?</h2>
+        <div class="space-y-4 text-slate-400">
+            <p><strong>1. Copy Link:</strong> Find the video on TikTok, tap "Share", and select "Copy Link".</p>
+            <p><strong>2. Paste:</strong> Paste that link in the box at the top of this page.</p>
+            <p><strong>3. Download:</strong> Click "Download" and save your file instantly.</p>
+        </div>
+    </section>
+
+    <footer class="text-center py-10 text-slate-500 border-t border-slate-800">
+        &copy; 2026 Tik2BD.net - Your Favorite TikTok Downloader
+    </footer>
 
     <script>
         async function downloadVideo() {
             const url = document.getElementById('urlInput').value;
             const result = document.getElementById('result');
-            
-            result.innerText = "ডাউনলোড লিঙ্ক তৈরি হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
-
+            const btn = document.getElementById('downloadBtn');
+            if(!url) { alert("Please enter a link!"); return; }
+            btn.disabled = true; btn.innerText = "Processing...";
             try {
-                const response = await fetch('/download', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url: url })
-                });
-
+                const response = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: url }) });
                 const data = await response.json();
-
-                if (data.success && data.url) {
-                    result.innerHTML = `<a href="${data.url}" target="_blank">ভিডিও ডাউনলোড করতে এখানে ক্লিক করুন</a>`;
+                if (data.success) {
+                    result.innerHTML = `<a href="${data.url}" target="_blank" class="text-blue-400 underline font-bold text-lg">Click here to save video</a>`;
                 } else {
-                    result.innerText = "এরর: ভিডিও লিঙ্ক খুঁজে পাওয়া যায়নি।";
+                    result.innerText = "Error: Could not find video. Please check the link.";
                 }
-            } catch (err) {
-                result.innerText = "এরর: সার্ভারে সমস্যা হয়েছে।";
-            }
+            } catch (err) { result.innerText = "Server error!"; } finally { btn.disabled = false; btn.innerText = "Download"; }
         }
     </script>
 </body>
