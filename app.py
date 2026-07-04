@@ -16,14 +16,9 @@ def download():
     if not video_url:
         return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
-    # এখানে headers এবং referer যোগ করা হয়েছে যা TikTok-এর ব্লক এড়াতে সাহায্য করবে
+    # এখানে 'impersonate' অপশনটি যুক্ত করা হয়েছে, যা ব্রাউজারকে নকল করবে
     ydl_opts = {
-        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'referer': 'https://www.tiktok.com/',
-        'headers': {
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-        }
+        'impersonate': 'chrome120', 
     }
     
     try:
@@ -32,10 +27,9 @@ def download():
             url = info.get('url')
             return jsonify({'success': True, 'url': url})
     except Exception as e:
-        # এরর হলে কনসোলে প্রিন্ট হবে, যা তুমি Render logs-এ দেখতে পাবে
-        print(f"Error occurred: {str(e)}")
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+    
