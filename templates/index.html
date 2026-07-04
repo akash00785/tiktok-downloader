@@ -1,29 +1,38 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="bn">
 <head>
-    <title>SkyNet Downloader</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>SkyNet Digital AI Downloader</title>
 </head>
-<body class="bg-gray-900 text-white flex flex-col items-center justify-center min-h-screen">
-    <h1 class="text-4xl font-bold mb-6">SkyNet Digital AI Downloader</h1>
-    <input id="url" type="text" placeholder="TikTok ভিডিও লিংক দিন" class="p-3 w-80 rounded text-black mb-4">
-    <button onclick="getLink()" class="bg-blue-600 px-6 py-2 rounded">ডাউনলোড লিংক খুঁজুন</button>
-    <p id="result" class="mt-4"></p>
+<body>
+    <h2>SkyNet Digital AI Downloader</h2>
+    <input type="text" id="urlInput" placeholder="TikTok URL এখানে দিন">
+    <button onclick="downloadVideo()">ডাউনলোড লিঙ্ক খুঁজুন</button>
+    <p id="result"></p>
 
     <script>
-        async function getLink() {
-            const url = document.getElementById('url').value;
-            const res = await fetch('/download', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({url: url})
-            });
-            const data = await res.json();
-            if(data.success) {
-                document.getElementById('result').innerHTML = `<a href="${data.url}" target="_blank" class="text-green-400 font-bold">ভিডিওটি এখানে ক্লিক করে ডাউনলোড করুন</a>`;
-            } else {
-                alert("এরর: লিংকটি কাজ করছে না!");
+        async function downloadVideo() {
+            const url = document.getElementById('urlInput').value;
+            const result = document.getElementById('result');
+            
+            result.innerText = "ডাউনলোড লিঙ্ক তৈরি হচ্ছে, অনুগ্রহ করে অপেক্ষা করুন...";
+
+            try {
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.url) {
+                    result.innerHTML = `<a href="${data.url}" target="_blank">ভিডিও ডাউনলোড করতে এখানে ক্লিক করুন</a>`;
+                } else {
+                    result.innerText = "এরর: ভিডিও লিঙ্ক খুঁজে পাওয়া যায়নি।";
+                }
+            } catch (err) {
+                result.innerText = "এরর: সার্ভারে সমস্যা হয়েছে।";
             }
         }
     </script>
