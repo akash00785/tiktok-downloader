@@ -3,40 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tik2BD - TikTok Video Downloader</title>
+    <title>Tik2BD - TikTok Video Downloader No Watermark</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .hero-gradient { background: linear-gradient(135deg, #4f46e5 0%, #d946ef 100%); }
+        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #d946ef 100%); }
     </style>
 </head>
-<body class="bg-[#0f172a] text-white font-sans">
+<body class="bg-[#0f172a] text-white font-sans antialiased">
 
-    <section class="hero-gradient min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
+    <header class="gradient-bg min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
         <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Tik2BD Downloader</h1>
-        <p class="mb-8 opacity-90">Download TikTok videos without watermark in HD.</p>
+        <p class="text-lg mb-8 opacity-90">Download TikTok videos without watermark in HD quality</p>
 
-        <div id="input-section" class="max-w-xl w-full bg-white p-2 rounded-2xl shadow-2xl flex items-center">
-            <input type="text" id="urlInput" placeholder="Paste link here..." 
+        <div class="max-w-2xl w-full bg-white p-2 rounded-2xl shadow-2xl flex items-center">
+            <input type="text" id="urlInput" placeholder="Paste your TikTok link here..." 
                    class="w-full p-4 text-slate-900 outline-none rounded-l-xl">
-            <button onclick="pasteLink()" class="px-3 text-slate-500 hover:text-blue-600 font-bold">Paste</button>
-            <button onclick="clearInput()" class="px-3 text-slate-500 hover:text-red-600 font-bold">Clear</button>
+            <button onclick="pasteLink()" class="p-4 text-slate-500 hover:text-blue-600 font-bold">Paste</button>
+            <button onclick="clearInput()" class="p-4 text-slate-500 hover:text-red-600 font-bold border-l">Clear</button>
             <button onclick="downloadVideo()" id="downloadBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-6 rounded-xl transition">
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition">
                 Download
             </button>
         </div>
+        <div id="result" class="mt-6 text-lg font-bold"></div>
+    </header>
 
-        <div id="result-section" class="hidden max-w-sm w-full bg-slate-900 mt-6 p-6 rounded-2xl border border-slate-700">
-            <img id="avatar" src="" class="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-blue-500">
-            <h2 id="nickname" class="text-lg font-bold mb-4"></h2>
-            <div class="space-y-3">
-                <a id="hd_btn" href="#" target="_blank" class="block bg-blue-600 py-3 rounded-lg font-bold">Without Watermark (HD)</a>
-                <a id="sd_btn" href="#" target="_blank" class="block bg-slate-700 py-3 rounded-lg font-bold">Without Watermark</a>
-                <a id="mp3_btn" href="#" target="_blank" class="block bg-purple-600 py-3 rounded-lg font-bold">Download MP3</a>
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <div class="grid md:grid-cols-3 gap-6 text-center">
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-xl font-bold mb-2 text-blue-400">No Watermark</h3>
+                <p class="text-slate-400">Remove TT logo automatically.</p>
             </div>
-            <button onclick="location.reload()" class="mt-4 text-slate-400 text-sm underline">Search another video</button>
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-xl font-bold mb-2 text-purple-400">HD Quality</h3>
+                <p class="text-slate-400">Highest resolution MP4 format.</p>
+            </div>
+            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+                <h3 class="text-xl font-bold mb-2 text-green-400">Unlimited</h3>
+                <p class="text-slate-400">Download as much as you want.</p>
+            </div>
         </div>
-    </section>
+    </main>
 
     <script>
         const input = document.getElementById('urlInput');
@@ -49,26 +56,19 @@
 
         async function downloadVideo() {
             const url = input.value;
+            const result = document.getElementById('result');
             const btn = document.getElementById('downloadBtn');
             if(!url) { alert("Please enter a link!"); return; }
-            
-            btn.innerText = "Processing...";
-            const response = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: url }) });
-            const data = await response.json();
-
-            if (data.success) {
-                document.getElementById('input-section').classList.add('hidden');
-                document.getElementById('result-section').classList.remove('hidden');
-                
-                document.getElementById('avatar').src = data.avatar;
-                document.getElementById('nickname').innerText = data.nickname;
-                document.getElementById('hd_btn').href = data.hd_url;
-                document.getElementById('sd_btn').href = data.sd_url;
-                document.getElementById('mp3_btn').href = data.mp3_url;
-            } else {
-                alert("Error: " + data.error);
-                btn.innerText = "Download";
-            }
+            btn.disabled = true; btn.innerText = "Loading...";
+            try {
+                const response = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: url }) });
+                const data = await response.json();
+                if (data.success) {
+                    result.innerHTML = `<a href="${data.url}" target="_blank" class="bg-green-600 px-6 py-3 rounded-full text-white">Download Video Now</a>`;
+                } else {
+                    result.innerText = "Error: Video not found.";
+                }
+            } catch (err) { result.innerText = "Server error!"; } finally { btn.disabled = false; btn.innerText = "Download"; }
         }
     </script>
 </body>
