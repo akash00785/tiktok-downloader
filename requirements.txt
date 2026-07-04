@@ -2,4 +2,4 @@ flask
 yt-dlp
 gunicorn
 curl_cffi
-
+requests
