@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 import yt_dlp
 import os
-import traceback # নতুন লাইব্রেরি যোগ করা হয়েছে
 
 app = Flask(__name__, template_folder='templates')
 
@@ -17,21 +16,28 @@ def download():
     if not video_url:
         return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
+    # impersonate বাদ দিয়ে সাধারণ হেডার্স ব্যবহার করছি যা অনেক সার্ভারে কাজ করে
     ydl_opts = {
-        'impersonate': 'chrome120',
-        'quiet': False,
+        'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-us,en;q=0.5',
+            'Sec-Fetch-Mode': 'navigate',
+        },
     }
     
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(video_url, download=False)
             url = info.get('url') or info.get('redirect_url')
-            return jsonify({'success': True, 'url': url})
+            
+            if url:
+                return jsonify({'success': True, 'url': url})
+            else:
+                return jsonify({'success': False, 'error': 'ভিডিও লিঙ্ক পাওয়া যায়নি'})
             
     except Exception as e:
-        # এটি লগে একদম স্পষ্ট করে দেখিয়ে দেবে কী সমস্যা হচ্ছে
-        error_details = traceback.format_exc()
-        print(f"--- TRACEBACK ERROR ---\n{error_details}\n-----------------------")
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
