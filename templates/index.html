@@ -5,45 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tik2BD - TikTok Video Downloader No Watermark</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        .gradient-bg { background: linear-gradient(135deg, #4f46e5 0%, #d946ef 100%); }
+        body { 
+            background: radial-gradient(circle at 50% -20%, #1e1b4b, #030712);
+            background-attachment: fixed;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
-<body class="bg-[#0f172a] text-white font-sans antialiased">
+<body class="text-white antialiased">
 
-    <header class="gradient-bg min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Tik2BD Downloader</h1>
-        <p class="text-lg mb-8 opacity-90">Download TikTok videos without watermark in HD quality</p>
+    <!-- Header Section -->
+    <header class="min-h-[400px] flex flex-col items-center justify-center p-6 text-center">
+        <h1 class="text-5xl font-extrabold mb-4 drop-shadow-lg">Tik2BD Downloader</h1>
+        <p class="text-lg mb-8 opacity-80">Download TikTok videos without watermark in HD quality</p>
 
-        <div class="max-w-2xl w-full bg-white p-2 rounded-2xl shadow-2xl flex items-center">
+        <!-- Glassmorphism Input Card -->
+        <div class="max-w-2xl w-full glass-card p-2 rounded-2xl shadow-2xl flex items-center">
             <input type="text" id="urlInput" placeholder="Paste your TikTok link here..." 
-                   class="w-full p-4 text-slate-900 outline-none rounded-l-xl">
-            <button onclick="pasteLink()" class="p-4 text-slate-500 hover:text-blue-600 font-bold">Paste</button>
-            <button onclick="clearInput()" class="p-4 text-slate-500 hover:text-red-600 font-bold border-l">Clear</button>
+                   class="w-full bg-transparent p-4 text-white placeholder-white/50 outline-none rounded-l-xl">
+            <button onclick="pasteLink()" class="p-4 text-white/70 hover:text-white transition font-semibold">Paste</button>
+            <button onclick="clearInput()" class="p-4 text-white/70 hover:text-red-400 transition font-semibold border-l border-white/10">Clear</button>
             <button onclick="downloadVideo()" id="downloadBtn"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 rounded-xl transition">
+                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 px-8 rounded-xl transition-all hover:scale-105 shadow-lg">
                 Download
             </button>
         </div>
-        <div id="result" class="mt-6 text-lg font-bold"></div>
+        <div id="result" class="mt-6 text-lg font-bold min-h-[50px]"></div>
     </header>
 
-    <main class="max-w-4xl mx-auto py-12 px-6">
+    <!-- How to Use Section -->
+    <section class="max-w-4xl mx-auto py-12 px-6">
+        <h2 class="text-3xl font-bold text-center mb-10">How to Use Tik2BD?</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
+                <h3 class="text-xl font-bold mb-2">1. Copy Link</h3>
+                <p class="text-slate-400">Copy the video link from TikTok app.</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
+                <h3 class="text-xl font-bold mb-2">2. Paste URL</h3>
+                <p class="text-slate-400">Paste your link in the input box above.</p>
+            </div>
+            <div class="bg-white/5 p-6 rounded-2xl border border-white/10 text-center">
+                <h3 class="text-xl font-bold mb-2">3. Download HD</h3>
+                <p class="text-slate-400">Click download and save the HD file.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="max-w-4xl mx-auto pb-12 px-6">
         <div class="grid md:grid-cols-3 gap-6 text-center">
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                 <h3 class="text-xl font-bold mb-2 text-blue-400">No Watermark</h3>
                 <p class="text-slate-400">Remove TT logo automatically.</p>
             </div>
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                 <h3 class="text-xl font-bold mb-2 text-purple-400">HD Quality</h3>
                 <p class="text-slate-400">Highest resolution MP4 format.</p>
             </div>
-            <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
                 <h3 class="text-xl font-bold mb-2 text-green-400">Unlimited</h3>
                 <p class="text-slate-400">Download as much as you want.</p>
             </div>
         </div>
-    </main>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 text-center border-t border-white/10 text-slate-500 text-sm">
+        <p>&copy; 2026 Tik2BD. All rights reserved.</p>
+        <div class="mt-2 space-x-4">
+            <a href="#" class="hover:text-white">Privacy Policy</a>
+            <a href="#" class="hover:text-white">Terms of Service</a>
+        </div>
+    </footer>
 
     <script>
         const input = document.getElementById('urlInput');
@@ -55,20 +97,38 @@
         function clearInput() { input.value = ''; }
 
         async function downloadVideo() {
-            const url = input.value;
+            const url = input.value.trim();
             const result = document.getElementById('result');
             const btn = document.getElementById('downloadBtn');
-            if(!url) { alert("Please enter a link!"); return; }
-            btn.disabled = true; btn.innerText = "Loading...";
+            
+            if(!url) { 
+                result.innerHTML = `<span class="text-yellow-400">⚠️ Please enter a valid link!</span>`;
+                return; 
+            }
+            
+            btn.disabled = true; 
+            btn.innerText = "Processing...";
+            result.innerHTML = "";
+
             try {
-                const response = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: url }) });
+                const response = await fetch('/download', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ url: url }) 
+                });
                 const data = await response.json();
+                
                 if (data.success) {
-                    result.innerHTML = `<a href="${data.url}" target="_blank" class="bg-green-600 px-6 py-3 rounded-full text-white">Download Video Now</a>`;
+                    result.innerHTML = `<a href="${data.url}" target="_blank" class="bg-green-600 hover:bg-green-500 px-8 py-3 rounded-full text-white font-bold transition shadow-lg animate-bounce">Download Video Now</a>`;
                 } else {
-                    result.innerText = "Error: Video not found.";
+                    result.innerHTML = `<span class="text-red-400">❌ Error: Video not found.</span>`;
                 }
-            } catch (err) { result.innerText = "Server error!"; } finally { btn.disabled = false; btn.innerText = "Download"; }
+            } catch (err) { 
+                result.innerHTML = `<span class="text-red-400">⚠️ Server error, please try again!</span>`; 
+            } finally { 
+                btn.disabled = false; 
+                btn.innerText = "Download"; 
+            }
         }
     </script>
 </body>
