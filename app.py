@@ -14,6 +14,7 @@ def home():
 def download():
     data = request.json
     video_url = data.get('url')
+    
     if not video_url:
         return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
@@ -29,18 +30,15 @@ def download():
         response = requests.post(api_url, headers=headers, data=payload)
         result = response.json()
         
-        # এখানে পুরো রেজাল্টটি লগ-এ প্রিন্ট করছি
-        print(f"DEBUG RESPONSE: {result}") 
-        
-        if result.get('status') == 'success':
-            # রেসপন্স অনুযায়ী লিঙ্ক বের করা
-            download_url = result.get('data', {}).get('play') or result.get('data', {}).get('url')
+        # এখানে আসল পরিবর্তন: 'status' এর বদলে 'code' চেক করছি
+        if result.get('code') == 0:
+            # লিঙ্কটি 'data' এর ভেতরে 'play' কী-তে আছে
+            download_url = result.get('data', {}).get('play')
             return jsonify({'success': True, 'url': download_url})
         else:
-            return jsonify({'success': False, 'error': f"API Error: {result.get('msg', 'Unknown Error')}"})
+            return jsonify({'success': False, 'error': 'API-তে ভিডিও পাওয়া যায়নি'})
             
     except Exception as e:
-        print(f"CODE ERROR: {e}")
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == '__main__':
