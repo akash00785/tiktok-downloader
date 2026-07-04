@@ -1,10 +1,19 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import os
+import random
 
 app = Flask(__name__, template_folder='templates')
 
-API_KEY = "1767026ffamsh2e8f6444c4d41b2p1af27ejsn62de6dc97c5b"
+# এনভায়রনমেন্ট থেকে সব API Key লোড করা হচ্ছে
+api_keys_string = os.environ.get("API_KEYS")
+
+# যদি এনভায়রনমেন্ট ভেরিয়েবল পাওয়া যায় তবে লিস্টে রূপান্তর করা হচ্ছে, 
+# না পেলে পুরোনো কি-টি ডিফল্ট হিসেবে রাখা হচ্ছে
+if api_keys_string:
+    API_KEYS = api_keys_string.split(",")
+else:
+    API_KEYS = ["1767026ffamsh2e8f6444c4d41b2p1af27ejsn62de6dc97c5b"]
 
 @app.route('/')
 def home():
@@ -19,9 +28,13 @@ def download():
         return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
     api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/" 
+    
+    # প্রতিবার রিকোয়েস্টের সময় এখান থেকে একটি র‍্যান্ডম কি (Key) বেছে নেবে
+    selected_key = random.choice(API_KEYS)
+    
     headers = {
         "x-rapidapi-host": "tiktok-video-no-watermark2.p.rapidapi.com",
-        "x-rapidapi-key": API_KEY,
+        "x-rapidapi-key": selected_key,
         "Content-Type": "application/x-www-form-urlencoded"
     }
     payload = {"url": video_url, "hd": "1"}
@@ -30,9 +43,8 @@ def download():
         response = requests.post(api_url, headers=headers, data=payload)
         result = response.json()
         
-        # এখানে আসল পরিবর্তন: 'status' এর বদলে 'code' চেক করছি
+        # 'code' চেক করছি
         if result.get('code') == 0:
-            # লিঙ্কটি 'data' এর ভেতরে 'play' কী-তে আছে
             download_url = result.get('data', {}).get('play')
             return jsonify({'success': True, 'url': download_url})
         else:
