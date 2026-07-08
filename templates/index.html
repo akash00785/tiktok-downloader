@@ -3,91 +3,91 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Tik2BD - Professional TikTok Downloader No Watermark</title>
-    <meta name="description" content="Download TikTok videos without watermark in HD quality. Fast, free, and mobile-friendly TikTok downloader.">
+    <title>Tik2BD - Professional TikTok Downloader No Watermark | HD Quality</title>
+    <meta name="description" content="Download TikTok videos without watermark in HD quality. The fastest TikTok video downloader online. Free, safe, and mobile-friendly.">
+    <meta name="keywords" content="tiktok downloader, download tiktok without watermark, tik2bd, hd tiktok video, save tiktok video">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background: #0f172a; font-family: 'Inter', sans-serif; }
         .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .loader { border-top-color: #3498db; animation: spinner 1.5s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body class="text-white min-h-screen">
 
-    <div class="max-w-4xl mx-auto px-5 py-20 text-center">
-        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Tik2BD Downloader</h1>
-        <p class="text-slate-400 mt-4 text-lg">HD Quality • Fast Download • 100% Free</p>
+    <header class="text-center py-10">
+        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Tik2BD</h1>
+        <p class="text-slate-400 mt-2">Professional TikTok Video Downloader</p>
+    </header>
 
-        <div class="glass rounded-3xl p-4 mt-10 shadow-2xl">
-            <div class="flex flex-col sm:flex-row gap-2">
-                <input id="urlInput" oninput="validateUrl()" placeholder="Paste TikTok link here..." class="flex-1 bg-transparent p-4 outline-none border-b-2 border-slate-700 focus:border-cyan-500 transition">
-                <button id="downloadBtn" onclick="processDownload()" disabled class="bg-blue-600 px-8 py-4 rounded-2xl font-bold disabled:opacity-50 hover:scale-105 transition">Download</button>
-            </div>
+    <main class="max-w-2xl mx-auto px-5">
+        <div class="glass rounded-3xl p-6 shadow-2xl">
+            <input id="urlInput" oninput="validateUrl()" placeholder="Paste valid TikTok link here..." class="w-full bg-transparent p-4 outline-none border-b-2 border-slate-700 focus:border-cyan-500 transition mb-4">
+            <button id="downloadBtn" onclick="processDownload()" disabled class="w-full bg-blue-600 py-4 rounded-2xl font-bold disabled:opacity-50 hover:bg-blue-500 transition">Download</button>
         </div>
-
         <div id="resultArea" class="mt-8"></div>
-    </div>
+    </main>
 
-    <section class="max-w-3xl mx-auto px-5 py-10">
-        <h2 class="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+    <section class="max-w-2xl mx-auto px-5 py-16">
+        <h2 class="text-2xl font-bold mb-6">Frequently Asked Questions</h2>
         <div class="space-y-4">
-            <div class="glass p-4 rounded-xl">Is it free? Yes, 100% free.</div>
-            <div class="glass p-4 rounded-xl">Watermark? No, we remove it.</div>
+            <div class="glass p-5 rounded-2xl">
+                <h3 class="font-bold text-cyan-400">Is Tik2BD free?</h3>
+                <p class="text-slate-400 text-sm">Yes, 100% free and unlimited.</p>
+            </div>
+            <div class="glass p-5 rounded-2xl">
+                <h3 class="font-bold text-cyan-400">Does it remove watermark?</h3>
+                <p class="text-slate-400 text-sm">Yes, we provide clean videos.</p>
+            </div>
             </div>
     </section>
+
+    <footer class="text-center py-10 text-slate-500 text-sm">
+        <div class="flex justify-center gap-4 mb-4 underline">
+            <a href="#">Privacy</a><a href="#">Terms</a><a href="#">DMCA</a>
+        </div>
+        <p>Powered by SkyNet Digital AI | Developed by Akash Islam</p>
+    </footer>
 
     <script>
         function validateUrl() {
             const input = document.getElementById('urlInput');
             const btn = document.getElementById('downloadBtn');
             const regex = /^(https?:\/\/)?(www\.)?(tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com)/;
-            if(regex.test(input.value)) {
-                input.classList.replace('border-slate-700', 'border-green-500');
-                btn.disabled = false;
-            } else {
-                input.classList.replace('border-green-500', 'border-slate-700');
-                btn.disabled = true;
-            }
+            btn.disabled = !regex.test(input.value);
         }
 
         async function processDownload() {
-            const url = document.getElementById('urlInput').value;
             const resArea = document.getElementById('resultArea');
+            resArea.innerHTML = '<div class="text-center text-cyan-400">Processing...</div>';
             
-            resArea.innerHTML = '<div class="text-cyan-400 animate-pulse">Processing video...</div>';
-            
-            const response = await fetch('/download', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({url})
-            });
-            const d = await response.json();
-            
-            if(d.success) {
-                resArea.innerHTML = `
-                    <div class="glass p-6 rounded-3xl text-left">
-                        <img src="${d.thumbnail}" class="w-full h-64 object-cover rounded-xl mb-4">
-                        <h3 class="font-bold text-xl">${d.title}</h3>
-                        <p class="text-slate-400">Author: ${d.author}</p>
-                        <div class="flex gap-4 mt-6">
-                            <a href="${d.hd_url}" download class="flex-1 bg-cyan-600 p-4 rounded-xl text-center font-bold">Download HD</a>
-                            <a href="${d.sd_url}" download class="flex-1 bg-slate-700 p-4 rounded-xl text-center font-bold">Download SD</a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                resArea.innerHTML = `<div class="bg-red-900/50 p-4 rounded-xl border border-red-500">${d.error}</div>`;
-            }
-        }
-
-        // Auto paste on load
-        window.onload = async () => {
             try {
-                const text = await navigator.clipboard.readText();
-                if(text.includes('tiktok.com')) {
-                    document.getElementById('urlInput').value = text;
-                    validateUrl();
+                const response = await fetch('/download', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: document.getElementById('urlInput').value})
+                });
+                const d = await response.json();
+                
+                if(d.success) {
+                    resArea.innerHTML = `
+                        <div class="glass p-6 rounded-3xl animate-in fade-in">
+                            <img src="${d.thumbnail}" class="w-full h-64 object-cover rounded-xl mb-4">
+                            <h3 class="font-bold text-lg mb-2">${d.title}</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <a href="${d.hd_url}" class="bg-cyan-600 p-3 rounded-lg text-center font-bold">HD Download</a>
+                                <a href="${d.sd_url}" class="bg-slate-700 p-3 rounded-lg text-center font-bold">SD Download</a>
+                            </div>
+                            <button onclick="location.reload()" class="mt-4 w-full text-slate-400 underline">Download Another</button>
+                        </div>
+                    `;
+                } else {
+                    resArea.innerHTML = `<div class="bg-red-500/20 p-4 rounded-xl border border-red-500/50 text-center">${d.error}</div>`;
                 }
-            } catch(e) {}
+            } catch(e) {
+                resArea.innerHTML = '<div class="text-red-500 text-center">Server Error. Please try again.</div>';
+            }
         }
     </script>
 </body>
