@@ -2,80 +2,93 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Tik2BD - TikTok Downloader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tik2BD - Professional TikTok Downloader No Watermark</title>
+    <meta name="description" content="Download TikTok videos without watermark in HD quality. Fast, free, and mobile-friendly TikTok downloader.">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Inter, sans-serif; background: #0f172a; background-image: radial-gradient(circle at top, #1d4ed8 0, #0f172a 45%); }
-        .card { background: rgba(255, 255, 255, .06); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, .08); }
+        body { background: #0f172a; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
 <body class="text-white min-h-screen">
-    <div class="max-w-3xl mx-auto px-5 py-12">
-        <header class="text-center mb-10">
-            <div class="inline-block px-3 py-1 rounded-full bg-blue-500/10 border border-blue-400/20 text-cyan-300 text-sm">No Watermark • HD Quality</div>
-            <h1 class="text-4xl md:text-6xl font-extrabold mt-5 bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">Tik2BD Downloader</h1>
-            <p class="text-slate-300 mt-3">Fast, clean and simple TikTok video downloader.</p>
-        </header>
-        
-        <div class="card rounded-3xl p-3 shadow-2xl">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input id="urlInput" placeholder="Paste TikTok video link..." class="flex-1 bg-transparent outline-none px-4 py-4 placeholder:text-slate-400">
-                <button id="pasteBtn" onclick="pasteLink()" class="px-5 py-3 rounded-2xl bg-slate-700">Paste</button>
-                <button id="clearBtn" onclick="clearInput()" class="hidden px-5 py-3 rounded-2xl bg-red-500/20 text-red-300">Clear</button>
-                <button id="downloadBtn" onclick="downloadVideo()" class="px-7 py-3 rounded-2xl font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:scale-[1.02] transition">Download</button>
+
+    <div class="max-w-4xl mx-auto px-5 py-20 text-center">
+        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Tik2BD Downloader</h1>
+        <p class="text-slate-400 mt-4 text-lg">HD Quality • Fast Download • 100% Free</p>
+
+        <div class="glass rounded-3xl p-4 mt-10 shadow-2xl">
+            <div class="flex flex-col sm:flex-row gap-2">
+                <input id="urlInput" oninput="validateUrl()" placeholder="Paste TikTok link here..." class="flex-1 bg-transparent p-4 outline-none border-b-2 border-slate-700 focus:border-cyan-500 transition">
+                <button id="downloadBtn" onclick="processDownload()" disabled class="bg-blue-600 px-8 py-4 rounded-2xl font-bold disabled:opacity-50 hover:scale-105 transition">Download</button>
             </div>
         </div>
-        
-        <div id="result" class="mt-5"></div>
-        
-        <div class="grid grid-cols-3 gap-3 mt-8">
-            <div class="card rounded-2xl p-4 text-center"><b class="text-cyan-300">No Watermark</b></div>
-            <div class="card rounded-2xl p-4 text-center"><b class="text-violet-300">HD Video</b></div>
-            <div class="card rounded-2xl p-4 text-center"><b class="text-emerald-300">Fast</b></div>
-        </div>
-        
-        <div class="card rounded-3xl p-6 mt-8">
-            <h2 class="font-bold text-xl mb-3">How to Download</h2>
-            <ol class="text-slate-300 space-y-2 list-decimal list-inside">
-                <li>Copy your TikTok link.</li>
-                <li>Paste it above.</li>
-                <li>Press Download.</li>
-            </ol>
-        </div>
-        
-        <footer class="text-center text-slate-400 py-10">
-            <p class="font-bold text-white">Tik2BD</p>
-            <p>Powered by SkyNet Digital AI</p>
-            <p class="mt-2">Developed by <span class="text-cyan-300 font-semibold">Akash Islam</span></p>
-        </footer>
+
+        <div id="resultArea" class="mt-8"></div>
     </div>
-    
+
+    <section class="max-w-3xl mx-auto px-5 py-10">
+        <h2 class="text-3xl font-bold mb-6">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <div class="glass p-4 rounded-xl">Is it free? Yes, 100% free.</div>
+            <div class="glass p-4 rounded-xl">Watermark? No, we remove it.</div>
+            </div>
+    </section>
+
     <script>
-        const i = document.getElementById('urlInput');
-        const p = document.getElementById('pasteBtn');
-        const c = document.getElementById('clearBtn');
-        
-        i.oninput = () => { p.classList.toggle('hidden', !!i.value); c.classList.toggle('hidden', !i.value); }
-        
-        async function pasteLink() { try { i.value = await navigator.clipboard.readText(); i.oninput(); } catch {} }
-        function clearInput() { i.value = ''; i.oninput(); }
-        
-        async function downloadVideo() {
-            const b = document.getElementById('downloadBtn');
-            const r = document.getElementById('result');
-            if(!i.value.trim()) return alert('Paste a TikTok link first');
-            b.disabled = true; b.innerText = 'Processing...';
+        function validateUrl() {
+            const input = document.getElementById('urlInput');
+            const btn = document.getElementById('downloadBtn');
+            const regex = /^(https?:\/\/)?(www\.)?(tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com)/;
+            if(regex.test(input.value)) {
+                input.classList.replace('border-slate-700', 'border-green-500');
+                btn.disabled = false;
+            } else {
+                input.classList.replace('border-green-500', 'border-slate-700');
+                btn.disabled = true;
+            }
+        }
+
+        async function processDownload() {
+            const url = document.getElementById('urlInput').value;
+            const resArea = document.getElementById('resultArea');
+            
+            resArea.innerHTML = '<div class="text-cyan-400 animate-pulse">Processing video...</div>';
+            
+            const response = await fetch('/download', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url})
+            });
+            const d = await response.json();
+            
+            if(d.success) {
+                resArea.innerHTML = `
+                    <div class="glass p-6 rounded-3xl text-left">
+                        <img src="${d.thumbnail}" class="w-full h-64 object-cover rounded-xl mb-4">
+                        <h3 class="font-bold text-xl">${d.title}</h3>
+                        <p class="text-slate-400">Author: ${d.author}</p>
+                        <div class="flex gap-4 mt-6">
+                            <a href="${d.hd_url}" download class="flex-1 bg-cyan-600 p-4 rounded-xl text-center font-bold">Download HD</a>
+                            <a href="${d.sd_url}" download class="flex-1 bg-slate-700 p-4 rounded-xl text-center font-bold">Download SD</a>
+                        </div>
+                    </div>
+                `;
+            } else {
+                resArea.innerHTML = `<div class="bg-red-900/50 p-4 rounded-xl border border-red-500">${d.error}</div>`;
+            }
+        }
+
+        // Auto paste on load
+        window.onload = async () => {
             try {
-                const x = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: i.value.trim() }) });
-                const d = await x.json();
-                r.innerHTML = d.success ? `<a class="block text-center bg-emerald-500 rounded-2xl p-4 font-bold" href="${d.url}" target="_blank">Download Video</a>` : '<div class="text-red-300">Video not found.</div>';
-            } catch { r.innerHTML = '<div class="text-red-300">Server error.</div>'; }
-            b.disabled = false; b.innerText = 'Download';
+                const text = await navigator.clipboard.readText();
+                if(text.includes('tiktok.com')) {
+                    document.getElementById('urlInput').value = text;
+                    validateUrl();
+                }
+            } catch(e) {}
         }
     </script>
 </body>
 </html>
-
