@@ -59,7 +59,6 @@
         const c = document.getElementById('clearBtn');
         
         i.oninput = () => { p.classList.toggle('hidden', !!i.value); c.classList.toggle('hidden', !i.value); }
-        
         async function pasteLink() { try { i.value = await navigator.clipboard.readText(); i.oninput(); } catch {} }
         function clearInput() { i.value = ''; i.oninput(); }
         
@@ -67,14 +66,39 @@
             const b = document.getElementById('downloadBtn');
             const r = document.getElementById('result');
             if(!i.value.trim()) return alert('Paste a TikTok link first');
+            
             b.disabled = true; b.innerText = 'Processing...';
+            r.innerHTML = '<div class="text-blue-300">Downloading... Please wait.</div>';
+            
             try {
-                const x = await fetch('/download', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ url: i.value.trim() }) });
+                const x = await fetch('/download', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ url: i.value.trim() }) 
+                });
                 const d = await x.json();
-                r.innerHTML = d.success ? `<a class="block text-center bg-emerald-500 rounded-2xl p-4 font-bold" href="${d.url}" target="_blank">Download Video</a>` : '<div class="text-red-300">Video not found.</div>';
-            } catch { r.innerHTML = '<div class="text-red-300">Server error.</div>'; }
+                
+                if(d.success) {
+                    const videoRes = await fetch(d.url);
+                    const blob = await videoRes.blob();
+                    const objectUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = objectUrl;
+                    a.download = 'Tik2BD_Video.mp4';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(objectUrl);
+                    r.innerHTML = '<div class="text-emerald-300 mt-4 text-center">Download successful!</div>';
+                } else {
+                    r.innerHTML = '<div class="text-red-300">Video not found.</div>';
+                }
+            } catch { 
+                r.innerHTML = '<div class="text-red-300">Server error.</div>'; 
+            }
             b.disabled = false; b.innerText = 'Download';
         }
     </script>
 </body>
 </html>
+
