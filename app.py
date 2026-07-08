@@ -8,7 +8,7 @@ app = Flask(__name__, template_folder='templates')
 # এনভায়রনমেন্ট থেকে কী গুলো লোড করা হচ্ছে
 api_keys_string = os.environ.get("API_KEYS")
 
-# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে (নিরাপদ)
+# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে
 API_KEYS = api_keys_string.split(",") if api_keys_string else []
 
 @app.route('/')
@@ -36,6 +36,8 @@ def download():
         "x-rapidapi-key": selected_key,
         "Content-Type": "application/x-www-form-urlencoded"
     }
+    
+    # hd=1 প্যারামিটারটি নিশ্চিত করে যে আমরা এইচডি কোয়ালিটি রিকোয়েস্ট করছি
     payload = {"url": video_url, "hd": "1"}
 
     try:
@@ -43,7 +45,11 @@ def download():
         result = response.json()
         
         if result.get('code') == 0:
-            download_url = result.get('data', {}).get('play')
+            data_content = result.get('data', {})
+            
+            # লজিক আপডেট: আগে hdplay (HD) খোঁজার চেষ্টা করবে, না পেলে play ব্যবহার করবে
+            download_url = data_content.get('hdplay') or data_content.get('play')
+            
             return jsonify({'success': True, 'url': download_url})
         else:
             return jsonify({'success': False, 'error': 'API-তে ভিডিও পাওয়া যায়নি'})
