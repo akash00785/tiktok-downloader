@@ -39,6 +39,7 @@ def download():
         
         if result.get('code') == 0:
             data_content = result.get('data', {})
+            # HD লিঙ্ক優先
             download_url = data_content.get('hdplay') or data_content.get('play')
             return jsonify({'success': True, 'url': download_url})
         else:
