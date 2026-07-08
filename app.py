@@ -1,15 +1,19 @@
 from flask import Flask, render_template, request, jsonify
 import requests
+import re
 import os
-import random
+import itertools
 
 app = Flask(__name__, template_folder='templates')
 
-# এনভায়রনমেন্ট থেকে কী গুলো লোড করা হচ্ছে
-api_keys_string = os.environ.get("API_KEYS")
+# API Keys Configuration
+api_keys = os.environ.get("API_KEYS", "").split(",")
+api_keys = [k.strip() for k in api_keys if k.strip()]
+key_cycle = itertools.cycle(api_keys)
 
-# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে
-API_KEYS = api_keys_string.split(",") if api_keys_string else []
+def is_valid_url(url):
+    pattern = r'^(https?://)?(www\.)?(tiktok\.com|vm\.tiktok\.com|vt\.tiktok\.com)/.+'
+    return re.match(pattern, url)
 
 @app.route('/')
 def home():
@@ -17,48 +21,51 @@ def home():
 
 @app.route('/download', methods=['POST'])
 def download():
-    # যদি কোনো কী সেট করা না থাকে, তবে এরর দেখাবে
-    if not API_KEYS:
-        return jsonify({'success': False, 'error': 'API Key কনফিগার করা হয়নি'})
-
     data = request.json
     video_url = data.get('url')
-    
-    if not video_url:
-        return jsonify({'success': False, 'error': 'URL দেওয়া হয়নি'})
 
-    api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/" 
-    
-    selected_key = random.choice(API_KEYS)
-    
-    headers = {
-        "x-rapidapi-host": "tiktok-video-no-watermark2.p.rapidapi.com",
-        "x-rapidapi-key": selected_key,
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    
-    # hd=1 প্যারামিটারটি নিশ্চিত করে যে আমরা এইচডি কোয়ালিটি রিকোয়েস্ট করছি
-    payload = {"url": video_url, "hd": "1"}
+    if not is_valid_url(video_url):
+        return jsonify({'success': False, 'error': 'Invalid TikTok URL'})
 
-    try:
-        response = requests.post(api_url, headers=headers, data=payload)
-        result = response.json()
+    api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/"
+    
+    # Retry logic implementation
+    for _ in range(len(api_keys)):
+        current_key = next(key_cycle)
+        headers = {
+            "x-rapidapi-host": "tiktok-video-no-watermark2.p.rapidapi.com",
+            "x-rapidapi-key": current_key,
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
         
-        if result.get('code') == 0:
-            data_content = result.get('data', {})
+        try:
+            response = requests.post(api_url, headers=headers, data={"url": video_url, "hd": "1"}, timeout=15)
             
-            # লজিক আপডেট: আগে hdplay (HD) খোঁজার চেষ্টা করবে, না পেলে play ব্যবহার করবে
-            download_url = data_content.get('hdplay') or data_content.get('play')
-            
-            return jsonify({'success': True, 'url': download_url})
-        else:
-            return jsonify({'success': False, 'error': 'API-তে ভিডিও পাওয়া যায়নি'})
-            
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)})
+            if response.status_code == 429: # Rate limit
+                continue 
+                
+            result = response.json()
+            if result.get('code') == 0:
+                data = result.get('data', {})
+                return jsonify({
+                    'success': True,
+                    'hd_url': data.get('hdplay'),
+                    'sd_url': data.get('play'),
+                    'thumbnail': data.get('cover'),
+                    'title': data.get('title'),
+                    'author': data.get('author', {}).get('unique_id'),
+                    'duration': data.get('duration')
+                })
+            else:
+                return jsonify({'success': False, 'error': 'Video not found or Private'})
+                
+        except requests.exceptions.Timeout:
+            continue
+        except Exception as e:
+            continue
+
+    return jsonify({'success': False, 'error': 'All API Keys exhausted or Server Error'})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
-
-                                      
