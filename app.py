@@ -7,8 +7,6 @@ app = Flask(__name__, template_folder='templates')
 
 # এনভায়রনমেন্ট থেকে কী গুলো লোড করা হচ্ছে
 api_keys_string = os.environ.get("API_KEYS")
-
-# যদি এনভায়রনমেন্ট ভেরিয়েবল না পাওয়া যায়, তবে এটি খালি থাকবে
 API_KEYS = api_keys_string.split(",") if api_keys_string else []
 
 @app.route('/')
@@ -17,7 +15,7 @@ def home():
 
 @app.route('/download', methods=['POST'])
 def download():
-    # যদি কোনো কী সেট করা না থাকে, তবে এরর দেখাবে
+    # এপিআই কী চেক করা হচ্ছে
     if not API_KEYS:
         return jsonify({'success': False, 'error': 'API Key কনফিগার করা হয়নি'})
 
@@ -29,6 +27,7 @@ def download():
 
     api_url = "https://tiktok-video-no-watermark2.p.rapidapi.com/" 
     
+    # একাধিক কী থাকলে র‍্যান্ডমলি একটি বেছে নেওয়া হচ্ছে
     selected_key = random.choice(API_KEYS)
     
     headers = {
@@ -37,17 +36,17 @@ def download():
         "Content-Type": "application/x-www-form-urlencoded"
     }
     
-    # hd=1 প্যারামিটারটি নিশ্চিত করে যে আমরা এইচডি কোয়ালিটি রিকোয়েস্ট করছি
+    # hd=1 প্যারামিটার দিয়ে রিকোয়েস্ট পাঠানো হচ্ছে
     payload = {"url": video_url, "hd": "1"}
 
     try:
         response = requests.post(api_url, headers=headers, data=payload)
         result = response.json()
         
+        # সফলভাবে ডেটা আসলে এইচডি লিঙ্ক খোঁজা হচ্ছে
         if result.get('code') == 0:
             data_content = result.get('data', {})
-            
-            # লজিক আপডেট: আগে hdplay (HD) খোঁজার চেষ্টা করবে, না পেলে play ব্যবহার করবে
+            # প্রথমে hdplay, না থাকলে play ব্যবহার করবে
             download_url = data_content.get('hdplay') or data_content.get('play')
             
             return jsonify({'success': True, 'url': download_url})
